@@ -4,8 +4,6 @@ angular.module('starter.controllers', [])
         $scope.signIn = function(user) {
             var response = userService.signIn(user);
             response.then(function(data) {
-                console.log('data');
-                console.log(data);
                 if (data.hasBeenLogged)
                     $location.path('/tab');
                 else
@@ -13,26 +11,12 @@ angular.module('starter.controllers', [])
             });
         };
     })
-    .controller('TimeSheetController', function($scope, timeSheetService, Chats) {
+    .controller('TimeSheetController', function($scope, timeSheetService) {
         init();
 
-        $scope.chats = Chats.all();
+        $scope.worksLogs = [];
 
-        function enumerateDaysBetweenDates(startDate, endDate) {
-            var dates = [];
-
-            var currDate = startDate.clone().startOf('day');
-            var lastDate = endDate.clone().startOf('day');
-
-            dates.push(startDate.format('D/M/YYYY'));
-
-            while (currDate.add('days', 1).diff(lastDate) < 0) {
-                dates.push(moment(currDate.clone().toDate()).format('D/M/YYYY'));
-            }
-
-            dates.push(endDate.format('D/M/YYYY'));
-            return dates;
-        }
+        $scope.currentUser = { name: 'cuscamayta' };
 
 
 
@@ -43,31 +27,92 @@ angular.module('starter.controllers', [])
 
             var response = timeSheetService.getTimeSheet();
             response.then(function(data) {
+                console.log('data isues');
+                console.log(data);
                 loadTimeSheet(data.issues, datesSprint);
             });
         }
 
-        function loadTimeSheet(issues, datesSprint) {
-            console.log(issues);
-            angular.forEach(datesSprint, function(date) {
-                searchAndCountWorkLoggedInDate(issues, date);
-            });
+        function getWorkLogs(worklogs) {
+            var worklogsResult = worklogs.select(function(worklog) {
+                return {
+                    timeSpent: worklog.timeSpent,
+                    timeSpentSeconds: worklog.timeSpentSeconds,
+                    updated: moment(worklog.started).format('DD/MM/YYYY'),
+                    userUpdated: worklog.updateAuthor.name,
+                    author: {
+                        name: worklog.author.name,
+                        displayName: worklog.author.displayName,
+                        avatarUrl: worklog.author.avatarUrls["48x48"]
+                    }
+                };
+            })
+            return worklogsResult;
         }
 
-        function searchAndCountWorkLoggedInDate(issues, dates) {
+
+        function getIssuesWithWorkLog(issues) {
+            var worklogsResult = issues.select(function(issue) {
+                return { key: issue.key, id: issue.id, worklogs: getWorkLogs(issue.fields.worklog.worklogs) };
+            });
+            return worklogsResult;
+        }
+
+        function loadTimeSheet(issues, datesSprint) {
+            var issuesResult = getIssuesWithWorkLog(issues);
+            console.log('worklogs');
+            console.log(issuesResult);
+
+            var countDay = 0;
+            angular.forEach(datesSprint, function(date) {
+                countDay++;
+                searchAndCountWorkLoggedInDate(issuesResult, date, 'Dia : '.concat(countDay));
+            });
+            console.log($scope.worksLogs);
+        }
+
+        function searchAndCountWorkLoggedInDate(issues, date, numberDay) {
+            var dateWorkLogs = [];
+
+            angular.forEach(issues, function(issue) {
+                var worklogsInDate = issue.worklogs.where(function(worklog) {
+                    return worklog.userUpdated == $scope.currentUser.name && worklog.updated == date;
+                });
+                dateWorkLogs.concat(worklogsInDate);
+            });
+
+            var dateWork = {
+                totalWorkLogged: dateWorkLogs.sum(function(datework) {
+                    return dateWork.timeSpentSeconds;
+                }),
+                date: date.dateWorkLog,
+                dayNumber: numberDay,
+                userAvatar: dateWorkLogs.first().author.avatarUrl,
+                issues: dateWorkLogs.where(function(datework) {
+                    return datework.updated == date;
+                })
+            }
+
+            $scope.worksLogs.push(dateWork);
+
+
+            // countDays++;
+            // var dateWork = {
+            //     date: '12/12/2016',
+            //     totalWorkLogged: '14h 5m',
+            //     dayNumber: 'Dia : '.concat(countDays),
+            //     userAvatar: 'http://avatar.com/user',
+            //     issues: []
+            // };
+
             //verificar si worklog esta entre las fechas
             //verificar si worklog es del usuario actual
             //sumar worklogg
             //mantener la referencia de la fecha
             //guardar lo issues relacionados a la fecha
-            var dateWork = {
-                date: '12/12/2016',
-                totalWorkLogged: '14h 5m',
-                dayNumber: 1,
-                userAvatar: 'http://avatar.com/user',
-                issues: []
-            }
+
         }
+
     })
     .controller('DashCtrl', function($scope) {})
     .controller('LogworkCtrl', function($scope) {
