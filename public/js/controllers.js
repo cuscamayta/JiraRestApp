@@ -11,14 +11,16 @@ angular.module('starter.controllers', [])
             });
         };
     })
-    .controller('TimeSheetController', function($scope, timeSheetService) {
+    .controller('TimeSheetController', function($scope, $location, $rootScope, timeSheetService) {
         init();
 
         $scope.worksLogs = [];
-
         $scope.currentUser = { name: 'cuscamayta' };
 
-
+        $scope.goToIssues = function(worklog) {
+            $rootScope.currentWorkLog = worklog;
+            location
+        }
 
         function init() {
             var fromDate = moment(new Date('05/03/2016')),
@@ -27,13 +29,11 @@ angular.module('starter.controllers', [])
 
             var response = timeSheetService.getTimeSheet();
             response.then(function(data) {
-                console.log('data isues');
-                console.log(data);
                 loadTimeSheet(data.issues, datesSprint);
             });
         }
 
-        function getWorkLogs(worklogs) {
+        function getWorkLogs(worklogs, issue) {
             var worklogsResult = worklogs.select(function(worklog) {
                 return {
                     timeSpent: worklog.timeSpent,
@@ -44,7 +44,8 @@ angular.module('starter.controllers', [])
                         name: worklog.author.name,
                         displayName: worklog.author.displayName,
                         avatarUrl: worklog.author.avatarUrls["48x48"]
-                    }
+                    },
+                    issue: issue
                 };
             })
             return worklogsResult;
@@ -53,22 +54,26 @@ angular.module('starter.controllers', [])
 
         function getIssuesWithWorkLog(issues) {
             var worklogsResult = issues.select(function(issue) {
-                return { key: issue.key, id: issue.id, worklogs: getWorkLogs(issue.fields.worklog.worklogs) };
+                return {
+                    worklogs: getWorkLogs(issue.fields.worklog.worklogs, {
+                        key: issue.key,
+                        id: issue.id,
+                        timeLogged: 0,
+                        timeLoggedLabel: '0h 0m'
+                    })
+                };
             });
             return worklogsResult;
         }
 
         function loadTimeSheet(issues, datesSprint) {
             var issuesResult = getIssuesWithWorkLog(issues);
-            console.log('worklogs');
-            console.log(issuesResult);
 
             var countDay = 0;
             angular.forEach(datesSprint, function(date) {
                 countDay++;
                 searchAndCountWorkLoggedInDate(issuesResult, date, 'Dia : '.concat(countDay));
             });
-            console.log($scope.worksLogs);
         }
 
         function searchAndCountWorkLoggedInDate(issues, date, numberDay) {
@@ -76,24 +81,36 @@ angular.module('starter.controllers', [])
 
             angular.forEach(issues, function(issue) {
                 var worklogsInDate = issue.worklogs.where(function(worklog) {
-                    return worklog.userUpdated == $scope.currentUser.name && worklog.updated == date;
+                    return worklog.userUpdated == $scope.currentUser.name && moment(worklog.updated).isSame(date);
                 });
-                dateWorkLogs.concat(worklogsInDate);
+                dateWorkLogs = dateWorkLogs.concat(worklogsInDate);
             });
 
-            var dateWork = {
-                totalWorkLogged: dateWorkLogs.sum(function(datework) {
-                    return dateWork.timeSpentSeconds;
-                }),
-                date: date.dateWorkLog,
-                dayNumber: numberDay,
-                userAvatar: dateWorkLogs.first().author.avatarUrl,
-                issues: dateWorkLogs.where(function(datework) {
-                    return datework.updated == date;
-                })
-            }
 
-            $scope.worksLogs.push(dateWork);
+            // console.log('worklogs');
+            // console.log(dateWorkLogs);
+            if (dateWorkLogs.length > 0) {
+                var dateWork = {
+                    totalWorkLogged: convertSecondsToTime(dateWorkLogs.sum(function(datework) {
+                        return datework.timeSpentSeconds;
+                    })),
+                    key: dateWorkLogs.length,
+                    date: date,
+                    dayNumber: numberDay,
+                    userAvatar: dateWorkLogs.first().author.avatarUrl,
+                    issues: dateWorkLogs.select(function(dateWorklog) {
+                        return dateWorklog.issue;
+                    }),
+                    // issues: dateWorkLogs.where(function(datework) {
+                    //     return moment(datework.updated).isSame(date);
+                    // }),
+                    dateUrl: moment(date).format('DDMMYYYY')
+                }
+
+                $scope.worksLogs.push(dateWork);
+
+                $rootScope.workLogsList = $scope.worksLogs;
+            }
 
 
             // countDays++;
@@ -132,15 +149,15 @@ angular.module('starter.controllers', [])
          * if given group is the selected group, deselect it
          * else, select the given group
          */
-        $scope.toggleGroup = function(group) {
-            if ($scope.isGroupShown(group)) {
+        $scope.toggleGroup = function(issue) {
+            if ($scope.isGroupShown(issue)) {
                 $scope.shownGroup = null;
             } else {
-                $scope.shownGroup = group;
+                $scope.shownGroup = issue;
             }
         };
-        $scope.isGroupShown = function(group) {
-            return $scope.shownGroup === group;
+        $scope.isGroupShown = function(issue) {
+            return $scope.shownGroup === issue;
         };
 
     })
@@ -160,29 +177,36 @@ angular.module('starter.controllers', [])
     };
 })
 
-.controller('TimesheetDetailCtrl', function($scope, $stateParams, Chats) {
-    $scope.chat = Chats.get($stateParams.chatId);
+.controller('TimesheetDetailCtrl', function($scope, $stateParams, $rootScope) {
 
-    $scope.groups = [];
-    for (var i = 0; i < 10; i++) {
-        $scope.groups[i] = {
-            name: i * 5,
-            items: []
-        };
-        for (var j = 0; j < 1; j++) {
-            $scope.groups[i].items.push(i + '-' + j);
-        }
+    init();
+
+    function init() {
+        var worklog = $rootScope.workLogsList.where(function(worklog) {
+            return worklog.key == $stateParams.key;
+        }).first();
+
+
+        if (worklog)
+            $scope.issues = worklog.issues;
     }
 
-    $scope.toggleGroup = function(group) {
-        if ($scope.isGroupShown(group)) {
+    $scope.updateTimeLogged = function(issue, timeLogged) {
+        // issue.timeLogged = issue.timeLogged ? issue.timeLogged : 0;
+        issue.timeLogged = issue.timeLogged + timeLogged;
+        issue.timeLoggedLabel = convertSecondsToTime(issue.timeLogged);
+    }
+
+    $scope.toggleGroup = function(issue) {
+        if ($scope.isGroupShown(issue)) {
             $scope.shownGroup = null;
         } else {
-            $scope.shownGroup = group;
+            $scope.shownGroup = issue;
         }
     };
-    $scope.isGroupShown = function(group) {
-        return $scope.shownGroup === group;
+
+    $scope.isGroupShown = function(issue) {
+        return $scope.shownGroup === issue;
     };
 })
 

@@ -56,7 +56,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
             }
         })
         .state('tab.timesheet-detail', {
-            url: '/timesheet/:date',
+            url: '/timesheet/:key',
             views: {
                 'tab-timesheet': {
                     templateUrl: 'templates/timesheet-detail.html',

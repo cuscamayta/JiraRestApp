@@ -378,3 +378,13 @@ function enumerateDaysBetweenDates(startDate, endDate) {
     dates.push(endDate.format('D/M/YYYY'));
     return dates;
 }
+
+
+function convertSecondsToTime(timeSeconds) {
+
+    var time = timeSeconds,
+        minutes = (time % 3600) / 60,
+        hours = parseInt(time / 3600);
+
+    return hours.toString().concat('h', ' ', minutes, 'm');
+}
