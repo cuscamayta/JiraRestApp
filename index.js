@@ -19,7 +19,7 @@ app.get('/addLog', function(request, response) {
 
 });
 
-app.get('/', function(request, response) {    
+app.get('/', function(request, response) {
     response.sendfile('./index.html');
 });
 
@@ -40,7 +40,7 @@ app.post('/login', function(req, resp) {
 
         jira = new jiraApi('https', config.host, config.port, config.username, config.password, '2');
 
-        jira.getCurrentUser(function(error, response, body) {          
+        jira.getCurrentUser(function(error, response, body) {
             resp.send({ status: true, hasBeenLogged: response != null ? true : false, data: response });
         });
     } catch (ex) {
@@ -48,9 +48,41 @@ app.post('/login', function(req, resp) {
     }
 });
 
+app.post('/saveLogWork', function(request, response) {
+    var logWork = request.body.worklog,
+        issueKey = request.body.issue;
 
+    if (jira)
+        jira.addWorklog(issueKey, worklog, '2h', function(a, b) {
+            console.log('a');
+            console.log(a);
+            console.log('b');
+            console.log(b);
+        });
+
+    // var worklog = {
+    //     "timeSpent": "1h 30m",
+    //     "started": "2015-09-01T10:30:18.932+0530",
+    //     "comment": "logging via nodejs"
+    // };
+
+});
+
+app.post('/getWorkLogs', function(request, response) {
+    var jql = 'worklogDate >="' + request.body.dateInit + '" and worklogDate <="' + request.body.finalDate + '" and project=' + request.body.projectName + ' and worklogAuthor=' + request.body.userName;
+
+    // var jql = 'worklogDate >="2016/05/09" and worklogDate <="2016/05/27" and project=RMTOOLS and worklogAuthor= aquiroz';
+
+
+    //  console.log('jql');
+    //  console.log(jql);
+    jira.searchJira(jql, { fields: ['*all'] }, function(error, body) {
+        response.send(body);
+    });
+})
 
 app.get('/test', function(request, response) {
+
 
     var config = {
         "username": "cuscamayta",
@@ -60,38 +92,29 @@ app.get('/test', function(request, response) {
     }
     var jira = new jiraApi('https', config.host, config.port, config.username, config.password, '2');
 
-    console.log(jira);
-
-
-    var issueNumber = "MANRMTOOLS-819";
-
-
-
-    var issue1 = {};
-
     var worklog = {
-        "timeSpent": "1h 30m",
-        "started": "2015-09-01T10:30:18.932+0530",
+        // "timeSpent": "1h 15m",
+        "started": "2016-05-05",
         "comment": "logging via nodejs"
     };
 
-    jira.addWorklog('MANRMTOOLS-880', worklog, '2h', function(a, b) {
-        console.log('a');
-        console.log(a);
-        console.log('b');
-        console.log(b);
-    });
+    // function(issueId, worklog, newEstimate, callback)
 
-    var jql = 'sprint in openSprints ()';
-    //    jira.searchJira(jql, function (error, body) {
-    //        console.log('body');
-    //        console.log(body);
-    //        //            response.send(body);
-    //    });
+    // jira.addWorklog('MANRMTOOLS-1087', worklog, '2h', function(a, b) {
+    //     console.log('a');
+    //     console.log(a);
+    //     console.log('b');
+    //     console.log(b);
+    // });
 
-    jira.getUsersIssues('cuscamayta', true, function(error, body) {
+    var jql = 'worklogDate >="2016/05/03" and worklogDate >="2016/05/23" and project=MANRMTools and worklogAuthor=cuscamayta';
+    jira.searchJira(jql, { fields: ['*all'] }, function(error, body) {
         response.send(body);
     });
+
+    // jira.getUsersIssues('cuscamayta', true, function(error, body) {
+    //     response.send(body);
+    // });
 
     //    jira.findIssue(issueNumber, function (error, issue) {
     //        issue1 = issue;

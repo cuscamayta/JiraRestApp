@@ -12,19 +12,40 @@ angular.module('starter.controllers', [])
         };
     })
     .controller('TimeSheetController', function($scope, $location, $rootScope, timeSheetService) {
-        init();
+
+        function getCurrentUser() {
+            return {
+                key: 'apedraza',
+                name: 'Geovana Serrano'
+            };
+        }
+
+        function getTimeSheetConfiguration() {
+            return {
+                dateInit: moment('05/09/2016').format('YYYY/M/D'),
+                finalDate: moment('05/27/2016').format('YYYY/M/D'),
+                userName: getCurrentUser().key,
+                projectName: 'RMTOOLS'
+            };
+        }
+
+        function getDatesWorkLogged() {
+            var fromDate = moment(new Date('05/09/2016')),
+                toDate = moment(new Date('05/27/2016'));
+            var datesSprint = enumerateDaysBetweenDates(fromDate, toDate);
+            return datesSprint;
+        }
 
         $scope.worksLogs = [];
-        $scope.currentUser = { name: 'cuscamayta' };
+        $scope.currentUser = getCurrentUser();
+        $scope.timeSheetConf = getTimeSheetConfiguration();
+        $scope.datesSprint = getDatesWorkLogged();
+        init();
 
         function init() {
-            var fromDate = moment(new Date('05/03/2016')),
-                toDate = moment(new Date('05/20/2016'));
-            var datesSprint = enumerateDaysBetweenDates(fromDate, toDate);
-
-            var response = timeSheetService.getTimeSheet();
+            var response = timeSheetService.getTimeSheet($scope.timeSheetConf);
             response.then(function(data) {
-                loadTimeSheet(data.issues, datesSprint);
+                loadTimeSheet(data.issues, $scope.datesSprint);
             });
         }
 
@@ -33,7 +54,7 @@ angular.module('starter.controllers', [])
                 return {
                     timeSpent: worklog.timeSpent,
                     timeSpentSeconds: worklog.timeSpentSeconds,
-                    updated: moment(worklog.started).format('DD/MM/YYYY'),
+                    updated: moment(worklog.started).format('D/M/YYYY'),
                     userUpdated: worklog.updateAuthor.name,
                     author: {
                         name: worklog.author.name,
@@ -76,14 +97,14 @@ angular.module('starter.controllers', [])
 
             angular.forEach(issues, function(issue) {
                 var worklogsInDate = issue.worklogs.where(function(worklog) {
-                    return worklog.userUpdated == $scope.currentUser.name && moment(worklog.updated).isSame(date);
+                    return worklog.userUpdated == $scope.currentUser.key && worklog.updated == date;
                 });
                 dateWorkLogs = dateWorkLogs.concat(worklogsInDate);
             });
 
 
-            // console.log('worklogs');
-            // console.log(dateWorkLogs);
+            console.log('worklogs');
+            console.log(dateWorkLogs);
             if (dateWorkLogs.length > 0) {
                 var dateWork = {
                     totalWorkLogged: convertSecondsToTime(dateWorkLogs.sum(function(datework) {
