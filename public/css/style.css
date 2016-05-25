@@ -5,7 +5,16 @@
 }
 
 .work-logged {
-    margin-right: 40px;
+    /*margin-right: 40px;*/
+    position: absolute !important;
+    top: 3px !important;
+    right: 8px !important;
+}
+
+.work-available {
+    position: absolute !important;
+    top: 27px !important;
+    right: 3px !important;
 }
 
 .btn-space {
@@ -22,3 +31,10 @@
     top: 27px !important;
     right: 53px !important;
 }
+
+
+/*.badge-time-spent {
+    position: absolute;
+    top: 3px;
+    right: -30px
+}*/

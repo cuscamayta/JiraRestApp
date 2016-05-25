@@ -17,11 +17,6 @@ angular.module('starter.controllers', [])
         $scope.worksLogs = [];
         $scope.currentUser = { name: 'cuscamayta' };
 
-        $scope.goToIssues = function(worklog) {
-            $rootScope.currentWorkLog = worklog;
-            location
-        }
-
         function init() {
             var fromDate = moment(new Date('05/03/2016')),
                 toDate = moment(new Date('05/20/2016'));
@@ -105,7 +100,7 @@ angular.module('starter.controllers', [])
                     //     return moment(datework.updated).isSame(date);
                     // }),
                     dateUrl: moment(date).format('DDMMYYYY')
-                }
+                };
 
                 $scope.worksLogs.push(dateWork);
 
@@ -177,7 +172,7 @@ angular.module('starter.controllers', [])
     };
 })
 
-.controller('TimesheetDetailCtrl', function($scope, $stateParams, $rootScope) {
+.controller('TimesheetDetailCtrl', function($scope, $stateParams, $rootScope, worklogService) {
 
     init();
 
@@ -190,12 +185,21 @@ angular.module('starter.controllers', [])
         if (worklog)
             $scope.issues = worklog.issues;
     }
+    $scope.saveWorkLog = function(issue) {
+        var response = worklogService.saveWorkLog(issue.timeLogged);
+        response.then(function(data) {
+            if (data.isSuccess)
+                alert('guardado correctamente');
+            else
+                alert('error al guardar intente nuevamente');
+        });
+    };
 
     $scope.updateTimeLogged = function(issue, timeLogged) {
-        // issue.timeLogged = issue.timeLogged ? issue.timeLogged : 0;
         issue.timeLogged = issue.timeLogged + timeLogged;
+        issue.timeLogged = issue.timeLogged > 0 ? issue.timeLogged : 0;
         issue.timeLoggedLabel = convertSecondsToTime(issue.timeLogged);
-    }
+    };
 
     $scope.toggleGroup = function(issue) {
         if ($scope.isGroupShown(issue)) {

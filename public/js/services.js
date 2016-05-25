@@ -13,7 +13,7 @@ angular.module('starter.services', [])
 
         this.getTimeSheet = function(user) {
             var defer = $q.defer();
-            $http.get('/js/data.json').success(function(response) {                
+            $http.get('/js/data.json').success(function(response) {
                 defer.resolve(response);
             });
             return defer.promise;
