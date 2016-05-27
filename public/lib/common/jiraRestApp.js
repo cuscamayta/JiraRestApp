@@ -388,3 +388,17 @@ function convertSecondsToTime(timeSeconds) {
 
     return hours.toString().concat('h', ' ', minutes, 'm');
 }
+
+
+function setInLocalStorage(itemKey, item) {
+    var itemString = JSON.stringify(item);
+    localStorage.setItem(itemKey, itemString);
+}
+
+function getItemFromLocalstorage(itemKey) {
+    var item = localStorage.getItem(itemKey);
+    if (item)
+        return JSON.parse(item);
+    else
+        return null;
+}

@@ -8,7 +8,7 @@
                     <i class="ion-bug"></i>&nbsp; {{issue.key}}
                     <button class="button button-small button-balanced icon-left ion-paper-airplane btn-log">Save</button>
                     <span class="badge badge-energized work-logged ">{{issue.timeLoggedLabel}}</span>
-                    <span class="badge badge-assertive work-available">2h 0m</span>
+                    <span class="badge badge-assertive work-available">{{issue.timeSpent}}</span>
                 </ion-item>
                 <ion-item class="item-accordion" ng-show="isGroupShown(issue)">
                     <div class="button-bar">
