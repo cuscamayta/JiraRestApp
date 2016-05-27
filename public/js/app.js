@@ -65,12 +65,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
             }
         })
 
-    .state('tab.account', {
-            url: '/account',
+    .state('tab.setting', {
+            url: '/setting',
             views: {
-                'tab-account': {
-                    templateUrl: 'templates/tab-account.html',
-                    controller: 'AccountCtrl'
+                'tab-setting': {
+                    templateUrl: 'templates/tab-setting.html',
+                    controller: 'SettingController'
                 }
             }
         })

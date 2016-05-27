@@ -10,7 +10,8 @@
     "express": "~4.9.x",
     "jira": "~0.9.2",
     "jira-api": "~0.2.2",
-    "body-parser": "~1.10.1"
+    "body-parser": "~1.10.1",
+    "express-session": "^1.7.6"
   },
   "engines": {
     "node": "0.12.2"

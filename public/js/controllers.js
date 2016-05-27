@@ -15,7 +15,7 @@ angular.module('starter.controllers', [])
 
         function getCurrentUser() {
             return {
-                key: 'apedraza',
+                key: 'gserrano',
                 name: 'Geovana Serrano'
             };
         }
@@ -197,7 +197,7 @@ angular.module('starter.controllers', [])
         };
     })
 
-.controller('AccountCtrl', function($scope) {
+.controller('SettingController', function($scope) {
     $scope.settings = {
         enableFriends: true
     };

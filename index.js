@@ -1,8 +1,11 @@
 var express = require('express'),
     jiraApi = require('jira').JiraApi,
+    session = require('express-session'),
+    bodyParser = require('body-parser'),
     jira = null;
 
-var bodyParser = require('body-parser');
+
+
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }))
     // parse application/json
@@ -11,7 +14,9 @@ app.use(bodyParser.json())
 // var app = express();
 
 app.set('port', (process.env.PORT || 5000));
+// app.use(checkAuthentication);
 app.use(express.static(__dirname + '/public'));
+
 // app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/addLog', function(request, response) {
@@ -24,11 +29,6 @@ app.get('/', function(request, response) {
 });
 
 
-//Convert second to hour and minutes
-// var time = 27900
-// var minutes = (time % 3600)/60;
-// var hours = parseInt(time / 3600);
-
 app.post('/login', function(req, resp) {
     try {
         var config = {
@@ -39,6 +39,8 @@ app.post('/login', function(req, resp) {
         };
 
         jira = new jiraApi('https', config.host, config.port, config.username, config.password, '2');
+
+        session.jiraInstance = jira;
 
         jira.getCurrentUser(function(error, response, body) {
             resp.send({ status: true, hasBeenLogged: response != null ? true : false, data: response });
@@ -68,14 +70,25 @@ app.post('/saveLogWork', function(request, response) {
 
 });
 
+// function checkAuthentication(req, res, next) {
+//     if (jira) {
+//         next();
+//     } else {
+//         res.redirect("/login");
+//     }
+// }
+
+// function existJiraObject(){
+//     if(!jira)
+//     return 
+// }
+
 app.post('/getWorkLogs', function(request, response) {
     var jql = 'worklogDate >="' + request.body.dateInit + '" and worklogDate <="' + request.body.finalDate + '" and project=' + request.body.projectName + ' and worklogAuthor=' + request.body.userName;
 
-    // var jql = 'worklogDate >="2016/05/09" and worklogDate <="2016/05/27" and project=RMTOOLS and worklogAuthor= aquiroz';
+    if (!jira)
+        jira = session.jiraInstance;
 
-
-    //  console.log('jql');
-    //  console.log(jql);
     jira.searchJira(jql, { fields: ['*all'] }, function(error, body) {
         response.send(body);
     });
