@@ -4,9 +4,10 @@ angular.module('starter.controllers', [])
         $scope.signIn = function(user) {
             var response = userService.signIn(user);
             response.then(function(data) {
-                if (data.hasBeenLogged)
+                if (data.hasBeenLogged) {
+                    setInLocalStorage('currentUser', data);
                     $location.path('/tab');
-                else
+                } else
                     alert('user or password incorrect');
             });
         };
@@ -199,37 +200,49 @@ angular.module('starter.controllers', [])
         };
     })
 
-.controller('SettingController', function($scope, $ionicModal) {
-
-
+.controller('SettingController', function($scope) {
+    $scope.currentUser = getItemFromLocalstorage('currentUser');
     $scope.$watch('settings', function(newValue, oldValue) {
-        console.log(newValue);
-        console.log(oldValue);
+        $scope.settings.userName = newValue.useCurrentUser ? $scope.currentUser.data.name : newValue.userName;
+        $scope.settings.projectName = newValue.useDefaultProject ? 'RMTOOLS' : newValue.projectName;
+        if (newValue.useDefaultDate) {
+            $scope.settings.startDate = convertDate(new Date());
+            $scope.settings.endDate = addDaysToday(10);
+        } else {
+            $scope.settings.startDate = isValidDate(newValue.startDate) ? newValue.startDate : new Date();
+            $scope.settings.endDate = isValidDate(newValue.endDate) ? newValue.endDate : addDaysToday(10);
+        }
     }, true);
 
-    $ionicModal.fromTemplateUrl('templates/datemodal.html',
-        function(modal) {
-            $scope.datemodal = modal;
-        }, {
-            // Use our scope for the scope of the modal to keep it simple
-            scope: $scope,
-            // The animation we want to use for the modal entrance
-            animation: 'slide-in-up'
-        }
-    );
-    $scope.opendateModal = function() {
-        $scope.datemodal.show();
-    };
-    $scope.closedateModal = function(modal) {
-        $scope.datemodal.hide();
-        $scope.datepicker = modal;
-    };
 
-    function getSettingsFromLocalStorage() {
-        return {};
-    }
-
+    debugger;
     $scope.settings = {
-        useCurrentUser: true
+        useCurrentUser: true,
+        userName: $scope.currentUser.data.name,
+        useDefaultProject: true,
+        projectName: 'RMTOOLS',
+        useDefaultDate: true,
+        startDate: moment(new Date()).format('d/m/yyyy'),
+        endDate: addDaysToday(10)
     };
+
+    // $ionicModal.fromTemplateUrl('templates/datemodal.html',
+    //     function(modal) {
+    //         $scope.datemodal = modal;
+    //     }, {
+    //         // Use our scope for the scope of the modal to keep it simple
+    //         scope: $scope,
+    //         // The animation we want to use for the modal entrance
+    //         animation: 'slide-in-up'
+    //     }
+    // );
+    // $scope.opendateModal = function() {
+    //     $scope.datemodal.show();
+    // };
+    // $scope.closedateModal = function(modal) {
+    //     $scope.datemodal.hide();
+    //     $scope.datepicker = modal;
+    // };
+
+
 });

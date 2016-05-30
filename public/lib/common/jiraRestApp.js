@@ -402,3 +402,20 @@ function getItemFromLocalstorage(itemKey) {
     else
         return null;
 }
+
+function isValidDate(str) {
+    var d = moment(str, 'D/M/YYYY');
+    if (d == null || !d.isValid()) return false;
+
+    return str.indexOf(d.format('D/M/YYYY')) >= 0 || str.indexOf(d.format('DD/MM/YYYY')) >= 0 || str.indexOf(d.format('D/M/YY')) >= 0 || str.indexOf(d.format('DD/MM/YY')) >= 0;
+}
+
+
+function addDaysToday(numbersDay) {
+    var currentDate = moment(new Date(), "DD-MM-YYYY").add('days', numbersDay);
+    return currentDate;
+}
+
+function convertDate(date){
+    return moment(date).format('d/m/yyy')
+}
