@@ -1,9 +1,39 @@
 <ion-view view-title="Setting">
-  <ion-content>
-    <ion-list>
-    <ion-toggle  ng-model="settings.configuration">
-        Enable Friends
-    </ion-toggle>
-    </ion-list>
-  </ion-content>
+    <ion-content>
+        <ion-list>
+            <ion-toggle ng-model="settings.useCurrentUser">
+                Use Current User
+            </ion-toggle>
+            <label class="item item-input item-stacked-label" ng-show='!settings.useCurrentUser'>
+                <span class="input-label">User name :</span>
+                <input type="text" placeholder="write a user name" ng-model='settings.userName'>
+            </label>
+            <ion-toggle ng-model="settings.useDefaultProject">
+                Show Defaul Project (RMTOOLS)
+            </ion-toggle>
+            <label class="item item-input item-stacked-label" ng-show='!settings.useDefaultProject'>
+                <span class="input-label">Project Name :</span>
+                <input type="text" placeholder="Write a project name" ng-model='settings.projectName'>
+            </label>
+            <ion-toggle ng-model="settings.useDefaultDate">
+                Show Defaul Date (Current Date + 10)
+            </ion-toggle>
+            <label class="item item-input item-stacked-label" ng-show='!settings.useDefaultDate'>
+                <span class="input-label">Fecha Inicio :</span>
+                <input type="date" placeholder="Escriba en formato MM/DD/YYY" ng-model='settings.startDate'>
+            </label>
+            <label class="item item-input item-stacked-label" ng-show='!settings.useDefaultDate'>
+                <span class="input-label">Fecha Final :</span>
+                <input type="date" format='mm/dd/yyyy' placeholder="Escriba en formato MM/DD/YYY" ng-model='settings.endDate'>
+            </label>
+            <!--   <label class="item item-input item-stacked-label">
+                <span class="input-label">Start Date :</span>
+                <input type="text" placeholder="Select a date MM/DD/YYYY" ng-model="datepicker" name="datepicker" ng-click="opendateModal()" readonly>
+            </label>
+            <label class="item item-input item-stacked-label">
+                <span class="input-label">End Date :</span>
+                <input type="text" placeholder="Select a date MM/DD/YYYY" ng-model="datepicker" name="datepicker" ng-click="opendateModal()" readonly>
+            </label> -->
+        </ion-list>
+    </ion-content>
 </ion-view>

@@ -15,7 +15,7 @@ angular.module('starter.controllers', [])
 
         function getCurrentUser() {
             return {
-                key: 'gserrano',
+                key: 'cuscamayta',
                 name: 'Geovana Serrano'
             };
         }
@@ -128,7 +128,8 @@ angular.module('starter.controllers', [])
                     userAvatar: dateWorkLogs.first().author.avatarUrl,
                     issues: dateWorkLogs.select(function(dateWorklog) {
                         debugger;
-                        dateWorklog.issue.timeSpent = convertSecondsToTime(dateWorklog.timeSpentSeconds);
+                        dateWorklog.issue
+                            .timeSpent = convertSecondsToTime(dateWorklog.timeSpentSeconds);
                         return dateWorklog.issue;
                     }),
 
@@ -141,7 +142,8 @@ angular.module('starter.controllers', [])
             }
         }
     })
-    .controller('LogworkCtrl', function($scope) {
+    .controller('LogworkCtrl', function($scope, Chats) {
+
 
         $scope.toggleGroup = function(issue) {
             if ($scope.isGroupShown(issue)) {
@@ -197,8 +199,37 @@ angular.module('starter.controllers', [])
         };
     })
 
-.controller('SettingController', function($scope) {
+.controller('SettingController', function($scope, $ionicModal) {
+
+
+    $scope.$watch('settings', function(newValue, oldValue) {
+        console.log(newValue);
+        console.log(oldValue);
+    }, true);
+
+    $ionicModal.fromTemplateUrl('templates/datemodal.html',
+        function(modal) {
+            $scope.datemodal = modal;
+        }, {
+            // Use our scope for the scope of the modal to keep it simple
+            scope: $scope,
+            // The animation we want to use for the modal entrance
+            animation: 'slide-in-up'
+        }
+    );
+    $scope.opendateModal = function() {
+        $scope.datemodal.show();
+    };
+    $scope.closedateModal = function(modal) {
+        $scope.datemodal.hide();
+        $scope.datepicker = modal;
+    };
+
+    function getSettingsFromLocalStorage() {
+        return {};
+    }
+
     $scope.settings = {
-        enableFriends: true
+        useCurrentUser: true
     };
 });
