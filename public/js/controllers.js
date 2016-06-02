@@ -63,7 +63,7 @@ angular.module('starter.controllers', [])
 
         function getTimeSpentInSecondForIssue(issue) {
             var worklogs = issue.fields.worklog.worklogs.where(function(worklog) {
-                return worklog.author.name == $scope.user.name;
+                return worklog.author.name == $scope.settings.userName;
             });
             if (worklogs && worklogs.length > 0)
                 return worklogs.sum(function(item) {
@@ -104,7 +104,7 @@ angular.module('starter.controllers', [])
 
             angular.forEach(issues, function(issue) {
                 var worklogsInDate = issue.worklogs.where(function(worklog) {
-                    return worklog.userUpdated == $scope.user.name && worklog.updated == date;
+                    return worklog.userUpdated == $scope.settings.userName && worklog.updated == date;
                 });
                 dateWorkLogs = dateWorkLogs.concat(worklogsInDate);
             });

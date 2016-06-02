@@ -1,4 +1,4 @@
-<ion-view view-title="Innsa Timesheet">
+<ion-view view-title="Innsa Timesheet" ng-init='init()'>
     <ion-content>
         <ion-list>
             <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="worklog in worksLogs" type="item-text-wrap" href="#/tab/timesheet/{{worklog.key}}">

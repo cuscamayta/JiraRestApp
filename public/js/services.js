@@ -46,13 +46,14 @@ angular.module('starter.services', [])
             debugger;
             var settings = this.getSettings();
 
-            settings.startDate = formatDateJira(settings.startDate);
-            settings.endDate = formatDateJira(settings.endDate);
-            if (settings.userName && settings.projectName && isValidDate(settings.startDate) && isValidDate(settings.endDate))
+            // var isStartDateValid = isValidDate(settings.startDate),
+            //     isEndDateValid = isValidDate(settings.endDate);
+            if (settings.userName && settings.projectName)
                 return true;
             return false;
 
         }
+        2016
     }])
     .service('worklogService', function($http, $q) {
 

@@ -84,7 +84,7 @@ app.post('/saveLogWork', function(request, response) {
 // }
 
 app.post('/getWorkLogs', function(request, response) {
-    var jql = 'worklogDate >="' + request.body.dateInit + '" and worklogDate <="' + request.body.finalDate + '" and project=' + request.body.projectName + ' and worklogAuthor=' + request.body.userName;
+    var jql = 'worklogDate >="' + request.body.startDate + '" and worklogDate <="' + request.body.endDate + '" and project=' + request.body.projectName + ' and worklogAuthor=' + request.body.userName;
 
     if (!jira)
         jira = session.jiraInstance;
