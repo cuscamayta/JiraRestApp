@@ -23,17 +23,19 @@ angular.module('starter.services', [])
     .service('commonService', ['$http', '$q', function($http, $q) {
 
         this.getSettings = function() {
-            var settings = getItemFromLocalstorage('settings');
+            var settings = getItemFromLocalstorage('settings'),
+                user = this.getUser();
+
             if (settings)
                 return settings;
             else
                 return {
                     useCurrentUser: true,
-                    userName: $scope.currentUser.data.name,
+                    userName: user.data.name,
                     useDefaultProject: true,
                     projectName: 'RMTOOLS',
                     useDefaultDate: true,
-                    startDate: convertDate(new Date()),
+                    startDate: formatDateJira(new Date()),
                     endDate: addDaysToday(10)
                 };
         };
@@ -43,17 +45,13 @@ angular.module('starter.services', [])
         }
 
         this.isSettingValid = function() {
-            debugger;
             var settings = this.getSettings();
 
-            // var isStartDateValid = isValidDate(settings.startDate),
-            //     isEndDateValid = isValidDate(settings.endDate);
             if (settings.userName && settings.projectName)
                 return true;
             return false;
 
         }
-        2016
     }])
     .service('worklogService', function($http, $q) {
 

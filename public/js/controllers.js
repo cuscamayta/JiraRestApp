@@ -35,6 +35,7 @@ angular.module('starter.controllers', [])
             if (commonService.isSettingValid()) {
                 var response = timeSheetService.getTimeSheet($scope.settings);
                 response.then(function(data) {
+                    if(data.issues.length <=0) alert('No tiene datos para mostrar');
                     loadTimeSheet(data.issues, $scope.datesSprint);
                 });
             } else {
