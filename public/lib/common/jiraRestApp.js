@@ -412,10 +412,14 @@ function isValidDate(str) {
 
 
 function addDaysToday(numbersDay) {
-    var currentDate = moment(new Date(), "DD-MM-YYYY").add('days', numbersDay);
-    return currentDate;
+    var currentDate = moment().add('days', numbersDay);
+    return currentDate.format('D/M/YYYY');
 }
 
-function convertDate(date){
-    return moment(date).format('d/m/yyy')
+function formatDateJira(date) {
+    return moment(date).format('YYYY/M/D');
+}
+
+function convertDate(date) {
+    return moment(date).format('D/M/YYYY');
 }
