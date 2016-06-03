@@ -32,9 +32,15 @@
     right: 53px !important;
 }
 
-
-/*.badge-time-spent {
-    position: absolute;
-    top: 3px;
-    right: -30px
-}*/
+.log-atention {
+    background: red;
+    /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(to bottom right, #E8400B, rgba(147, 66, 48, 0));
+    /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(to bottom right, #E8400B, rgba(147, 66, 48, 0));
+    /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(to bottom right, #E8400B, rgba(147, 66, 48, 0));
+    /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right, #E8400B, rgba(147, 66, 48, 0));
+    /* Standard syntax (must be last) */
+}

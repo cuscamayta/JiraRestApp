@@ -14,12 +14,19 @@ angular.module('starter.controllers', [])
     })
     .controller('TimeSheetController', function($scope, $location, $rootScope, timeSheetService, commonService) {
 
-        $scope.user = commonService.getUser();
-        $scope.settings = commonService.getSettings();
-        $scope.worksLogs = [];
-        $scope.datesSprint = getDatesWorkLogged();
+        function initialize() {
+            $scope.user = commonService.getUser();
+            $scope.settings = commonService.getSettings();
+            $scope.worksLogs = [];
+            $scope.datesSprint = getDatesWorkLogged();
 
-        init();
+            init();
+        }
+
+        $scope.$on("$ionicView.beforeEnter", function(event, data) {
+            initialize();
+        });
+
 
 
         function getDatesWorkLogged() {
@@ -100,6 +107,32 @@ angular.module('starter.controllers', [])
             });
         }
 
+        function getDateWorkLogDefault(date, numberDay, userAvatar) {
+            return {
+                totalWorkLogged: convertSecondsToTime(0),
+                key: '0',
+                date: date,
+                dayNumber: numberDay,
+                userAvatar: userAvatar,
+                issues: [],
+                timeSpentSeconds: 0,
+                dateUrl: ''
+            };
+        }
+
+        function dateIsMajorToCurrentDate(dateString) {
+            var SpecialToDate = '13/6/2016'; // DD/MM/YYYY
+
+            var SpecialTo = moment(dateString, "D/M/YYYY");
+            if (SpecialTo > moment()) {
+                // alert('la fecha es mayor a la actual');
+                return true;
+            } else {
+                return false;
+                // alert('la fecha es menor a la actual');
+            }
+        }
+
         function searchAndCountWorkLoggedInDate(issues, date, numberDay) {
             var dateWorkLogs = [];
 
@@ -110,28 +143,31 @@ angular.module('starter.controllers', [])
                 dateWorkLogs = dateWorkLogs.concat(worklogsInDate);
             });
 
-            if (dateWorkLogs.length > 0) {
-                var dateWork = {
-                    totalWorkLogged: convertSecondsToTime(dateWorkLogs.sum(function(datework) {
-                        return datework.timeSpentSeconds;
-                    })),
-                    key: dateWorkLogs.length,
-                    date: date,
-                    dayNumber: numberDay,
-                    userAvatar: dateWorkLogs.first().author.avatarUrl,
-                    issues: dateWorkLogs.select(function(dateWorklog) {
-                        dateWorklog.issue
-                            .timeSpent = convertSecondsToTime(dateWorklog.timeSpentSeconds);
-                        return dateWorklog.issue;
-                    }),
+            var dateWork = dateWorkLogs.length > 0 ? {
+                totalWorkLogged: convertSecondsToTime(dateWorkLogs.sum(function(datework) {
+                    return datework.timeSpentSeconds;
+                })),
+                key: dateWorkLogs.length,
+                date: date,
+                dayNumber: numberDay,
+                userAvatar: dateWorkLogs.first().author.avatarUrl,
+                timeSpentSeconds: dateWorkLogs.sum(function(datework) {
+                    return datework.timeSpentSeconds;
+                }),
+                issues: dateWorkLogs.select(function(dateWorklog) {
+                    dateWorklog.issue.timeSpent = convertSecondsToTime(dateWorklog.timeSpentSeconds);
+                    return dateWorklog.issue;
+                }),
 
-                    dateUrl: moment(date).format('DDMMYYYY')
-                };
+                dateUrl: moment(date).format('DDMMYYYY')
+            } : getDateWorkLogDefault(date, numberDay, $scope.worksLogs.length > 0 ? $scope.worksLogs[1].userAvatar : '');
 
+            if (!dateIsMajorToCurrentDate(date)) {
                 $scope.worksLogs.push(dateWork);
 
                 $rootScope.workLogsList = $scope.worksLogs;
             }
+
         }
     })
     .controller('LogworkCtrl', function($scope, Chats) {
@@ -192,14 +228,23 @@ angular.module('starter.controllers', [])
     })
 
 .controller('SettingController', function($scope, commonService) {
-    $scope.currentUser = commonService.getUser();
-    $scope.$watch('settings', function(newValue, oldValue) {
-        $scope.settings.userName = newValue.useCurrentUser ? $scope.currentUser.data.name : newValue.userName;
-        $scope.settings.projectName = newValue.useDefaultProject ? 'RMTOOLS' : newValue.projectName;
+        $scope.currentUser = commonService.getUser();
+        $scope.$watch('settings', function(newValue, oldValue) {
+            $scope.settings.userName = newValue.useCurrentUser ? $scope.currentUser.data.name : newValue.userName;
+            $scope.settings.projectName = newValue.useDefaultProject ? 'RMTOOLS' : newValue.projectName;
 
-        setInLocalStorage('settings', $scope.settings);
-    }, true);
+            setInLocalStorage('settings', $scope.settings);
+        }, true);
 
-    $scope.settings = commonService.getSettings();
+        $scope.settings = commonService.getSettings();
 
-});
+    })
+    .directive('backcolor', function() {
+        return function(scope, element, attrs) {
+            var timeSpent = attrs.backcolor;
+            if (timeSpent < 21600) {
+                var content = element.find('a');
+                content.addClass('log-atention')
+            }
+        };
+    });
