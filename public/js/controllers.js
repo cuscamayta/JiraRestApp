@@ -35,7 +35,7 @@ angular.module('starter.controllers', [])
             if (commonService.isSettingValid()) {
                 var response = timeSheetService.getTimeSheet($scope.settings);
                 response.then(function(data) {
-                    if(data.issues.length <=0) alert('No tiene datos para mostrar');
+                    if (data.issues.length <= 0) alert('No tiene datos para mostrar');
                     loadTimeSheet(data.issues, $scope.datesSprint);
                 });
             } else {
@@ -64,7 +64,7 @@ angular.module('starter.controllers', [])
 
         function getTimeSpentInSecondForIssue(issue) {
             var worklogs = issue.fields.worklog.worklogs.where(function(worklog) {
-                return worklog.author.name == $scope.settings.userName;
+                return worklog.author.name.toUpperCase() == $scope.settings.userName.toUpperCase();
             });
             if (worklogs && worklogs.length > 0)
                 return worklogs.sum(function(item) {
@@ -105,7 +105,7 @@ angular.module('starter.controllers', [])
 
             angular.forEach(issues, function(issue) {
                 var worklogsInDate = issue.worklogs.where(function(worklog) {
-                    return worklog.userUpdated == $scope.settings.userName && worklog.updated == date;
+                    return worklog.userUpdated.toUpperCase() == $scope.settings.userName.toUpperCase() && worklog.updated == date;
                 });
                 dateWorkLogs = dateWorkLogs.concat(worklogsInDate);
             });
