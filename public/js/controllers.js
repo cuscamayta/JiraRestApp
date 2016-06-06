@@ -1,4 +1,4 @@
-angular.module('starter.controllers', [])
+angular.module('starter.controllers', ['onezone-datepicker'])
 
 .controller('LoginCtrl', function($scope, userService, $location) {
         $scope.signIn = function(user) {
@@ -237,6 +237,31 @@ angular.module('starter.controllers', [])
         }, true);
 
         $scope.settings = commonService.getSettings();
+
+        $scope.onezoneDatepicker = { date: new Date() }
+            // $scope.onezoneDatepicker = {
+            //     date: new Date(),
+            //     mondayFirst: false,
+            //     // months: months,
+            //     // daysOfTheWeek: daysOfTheWeek,
+            //     // startDate: '12/06/2015',
+            //     // endDate: '12/06/2015',
+            //     disablePastDays: false,
+            //     disableSwipe: false,
+            //     disableWeekend: false,
+            //     disableDates: false,
+            //     disableDaysOfWeek: false,
+            //     showDatepicker: false,
+            //     showTodayButton: true,
+            //     calendarMode: false,
+            //     hideCancelButton: false,
+            //     hideSetButton: false,
+            //     highlights: [],
+            //     callback: function(value) {
+            //         // your code
+            //     }
+            // };
+
 
     })
     .directive('backcolor', function() {

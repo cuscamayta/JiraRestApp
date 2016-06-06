@@ -44,3 +44,8 @@
     background: linear-gradient(to bottom right, #E8400B, rgba(147, 66, 48, 0));
     /* Standard syntax (must be last) */
 }
+
+
+/*.view-container {
+    display: initial !important;
+}*/

@@ -25,10 +25,15 @@
             <label class="item item-input item-stacked-label" ng-show='!settings.useDefaultDate'>
                 <span class="input-label">Fecha Final :</span>
                 <input type="text" placeholder="Escriba en formato MM/DD/YYY" ng-model='settings.endDate'>
-            </label>
-            <!--   <label class="item item-input item-stacked-label">
+                <onezone-datepicker datepicker-object="onezoneDatepicker">
+                    <button class="button button-block button-outline button-positive show-onezone-datepicker">
+                        {{onezoneDatepicker.date | date:'dd MMMM yyyy'}}
+                    </button>
+                </onezone-datepicker>
+                <!--   <label class="item item-input item-stacked-label">
                 <span class="input-label">Start Date :</span>
-                <input type="text" placeholder="Select a date MM/DD/YYYY" ng-model="datepicker" name="datepicker" ng-click="opendateModal()" readonly>
+                <input type="text" place
+holder="Select a date MM/DD/YYYY" ng-model="datepicker" name="datepicker" ng-click="opendateModal()" readonly>
             </label>
             <label class="item item-input item-stacked-label">
                 <span class="input-label">End Date :</span>
