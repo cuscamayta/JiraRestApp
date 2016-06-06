@@ -1,4 +1,4 @@
-angular.module('starter.controllers', ['onezone-datepicker'])
+angular.module('starter.controllers', ['pickadate'])
 
 .controller('LoginCtrl', function($scope, userService, $location) {
         $scope.signIn = function(user) {
@@ -160,7 +160,7 @@ angular.module('starter.controllers', ['onezone-datepicker'])
                 }),
 
                 dateUrl: moment(date).format('DDMMYYYY')
-            } : getDateWorkLogDefault(date, numberDay, $scope.worksLogs.length > 0 ? $scope.worksLogs[1].userAvatar : '');
+            } : getDateWorkLogDefault(date, numberDay, $scope.worksLogs.length > 0 ? $scope.worksLogs.first().userAvatar : '');
 
             if (!dateIsMajorToCurrentDate(date)) {
                 $scope.worksLogs.push(dateWork);
@@ -227,7 +227,7 @@ angular.module('starter.controllers', ['onezone-datepicker'])
         };
     })
 
-.controller('SettingController', function($scope, commonService) {
+.controller('SettingController', function($scope, commonService, $ionicModal) {
         $scope.currentUser = commonService.getUser();
         $scope.$watch('settings', function(newValue, oldValue) {
             $scope.settings.userName = newValue.useCurrentUser ? $scope.currentUser.data.name : newValue.userName;
@@ -238,29 +238,25 @@ angular.module('starter.controllers', ['onezone-datepicker'])
 
         $scope.settings = commonService.getSettings();
 
-        $scope.onezoneDatepicker = { date: new Date() }
-            // $scope.onezoneDatepicker = {
-            //     date: new Date(),
-            //     mondayFirst: false,
-            //     // months: months,
-            //     // daysOfTheWeek: daysOfTheWeek,
-            //     // startDate: '12/06/2015',
-            //     // endDate: '12/06/2015',
-            //     disablePastDays: false,
-            //     disableSwipe: false,
-            //     disableWeekend: false,
-            //     disableDates: false,
-            //     disableDaysOfWeek: false,
-            //     showDatepicker: false,
-            //     showTodayButton: true,
-            //     calendarMode: false,
-            //     hideCancelButton: false,
-            //     hideSetButton: false,
-            //     highlights: [],
-            //     callback: function(value) {
-            //         // your code
-            //     }
-            // };
+        $ionicModal.fromTemplateUrl('js/templates/datemodal.html',
+            function(modal) {
+                $scope.datemodal = modal;
+            }, {
+                // Use our scope for the scope of the modal to keep it simple
+                scope: $scope,
+                // The animation we want to use for the modal entrance
+                animation: 'slide-in-up'
+            }
+        );
+        $scope.opendateModal = function() {
+            $scope.datemodal.show();
+        };
+        $scope.closedateModal = function(modal) {
+            $scope.datemodal.hide();
+            $scope.datepicker = modal;
+        };
+
+
 
 
     })
