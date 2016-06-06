@@ -1,6 +1,6 @@
 angular.module('starter.controllers', ['pickadate'])
 
-.controller('LoginCtrl', function($scope, userService, $location) {
+.controller('LoginCtrl', function($scope, userService, $location, commonService) {
         $scope.signIn = function(user) {
             var response = userService.signIn(user);
             response.then(function(data) {
@@ -8,9 +8,13 @@ angular.module('starter.controllers', ['pickadate'])
                     setInLocalStorage('currentUser', data);
                     $location.path('/tab');
                 } else
-                    alert('user or password incorrect');
+                    commonService.showAlert('user or password incorrect', initLogin());
             });
         };
+
+        function initLogin() {
+            $scope.user = {};
+        }
     })
     .controller('TimeSheetController', function($scope, $location, $rootScope, timeSheetService, commonService) {
 
@@ -38,15 +42,23 @@ angular.module('starter.controllers', ['pickadate'])
 
 
 
+
         function init() {
             if (commonService.isSettingValid()) {
                 var response = timeSheetService.getTimeSheet($scope.settings);
                 response.then(function(data) {
-                    if (data.issues.length <= 0) alert('No tiene datos para mostrar');
+                    if (!data.isLogged) {
+                        commonService.showAlert('Please login again...', function() {
+                            $location.path('/login');
+                        });
+                    }
+                    if (data.issues.length <= 0) commonService.showAlert('No tiene datos para mostrar, Configure con otros datos.', function() {
+                        $location.path('/tab/setting');
+                    });
                     loadTimeSheet(data.issues, $scope.datesSprint);
                 });
             } else {
-                alert('los datos de configuracion no son validos revise porfavor');
+                commonService.showAlert('los datos de configuracion no son validos revise porfavor');
                 $location.path('/tab/setting');
             }
         }
@@ -121,15 +133,13 @@ angular.module('starter.controllers', ['pickadate'])
         }
 
         function dateIsMajorToCurrentDate(dateString) {
-            var SpecialToDate = '13/6/2016'; // DD/MM/YYYY
+            var SpecialToDate = '13/6/2016';
 
             var SpecialTo = moment(dateString, "D/M/YYYY");
             if (SpecialTo > moment()) {
-                // alert('la fecha es mayor a la actual');
                 return true;
             } else {
                 return false;
-                // alert('la fecha es menor a la actual');
             }
         }
 
@@ -227,7 +237,7 @@ angular.module('starter.controllers', ['pickadate'])
         };
     })
 
-.controller('SettingController', function($scope, commonService, $ionicModal) {
+.controller('SettingController', function($scope, commonService) {
         $scope.currentUser = commonService.getUser();
         $scope.$watch('settings', function(newValue, oldValue) {
             $scope.settings.userName = newValue.useCurrentUser ? $scope.currentUser.data.name : newValue.userName;
@@ -238,34 +248,49 @@ angular.module('starter.controllers', ['pickadate'])
 
         $scope.settings = commonService.getSettings();
 
-        $ionicModal.fromTemplateUrl('js/templates/datemodal.html',
-            function(modal) {
-                $scope.datemodal = modal;
-            }, {
-                // Use our scope for the scope of the modal to keep it simple
-                scope: $scope,
-                // The animation we want to use for the modal entrance
-                animation: 'slide-in-up'
-            }
-        );
-        $scope.opendateModal = function() {
-            $scope.datemodal.show();
-        };
-        $scope.closedateModal = function(modal) {
-            $scope.datemodal.hide();
-            $scope.datepicker = modal;
-        };
+
 
 
 
 
     })
-    .directive('backcolor', function() {
-        return function(scope, element, attrs) {
-            var timeSpent = attrs.backcolor;
-            if (timeSpent < 21600) {
-                var content = element.find('a');
-                content.addClass('log-atention')
+    .directive('datepicker', function($ionicModal) {
+        return {
+            restrict: 'E',
+            scope: {
+                value: '=',
+                label: '@'
+            },
+            template: '<label class="item item-input item-stacked-label">' +
+                '<span class="input-label">{{label}} :</span>' +
+                '<input type="text" datepicker format="yyyy/mm/dd" placeholder="Select a date YYYY/MM/DD" ng-model="value" name="datepicker" ng-click="opendateModal()"  readonly>' +
+                '</label>',
+            link: function($scope, element, attrs) {
+
+                setValueToInput($scope.value);
+                $ionicModal.fromTemplateUrl('templates/datemodal.html',
+                    function(modal) {
+                        $scope.datemodal = modal;
+                    }, {
+                        scope: $scope,
+                        animation: 'slide-in-up'
+                    }
+                );
+                $scope.opendateModal = function() {
+                    $scope.datemodal.show();
+                };
+
+                function setValueToInput(value) {
+                    element.find('input').val(value);
+                    $scope.value = value;
+                }
+                $scope.closedateModal = function(modal) {
+
+                    $scope.datemodal.hide();
+                    $scope.datepicker = modal;
+                    setValueToInput(modal);
+                };
+
             }
-        };
-    });
+        }
+    })

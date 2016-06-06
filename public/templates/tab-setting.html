@@ -18,23 +18,8 @@
             <ion-toggle ng-model="settings.useDefaultDate">
                 Show Defaul Date (Current Date + 10)
             </ion-toggle>
-            <label class="item item-input item-stacked-label" ng-show='!settings.useDefaultDate'>
-                <span class="input-label">Fecha Inicio :</span>
-                <input type="text" placeholder="Escriba en formato MM/DD/YYY" ng-model='settings.startDate'>
-            </label>
-            <label class="item item-input item-stacked-label" ng-show='!settings.useDefaultDate'>
-                <span class="input-label">Fecha Final :</span>
-                <input type="text" placeholder="Escriba en formato MM/DD/YYY" ng-model='settings.endDate'>
-                <div pickadate ng-model="date" format="dd/mm/yyyy"></div>
-                <!--   <label class="item item-input item-stacked-label">
-                <span class="input-label">Start Date :</span>
-                <input type="text" place
-holder="Select a date MM/DD/YYYY" ng-model="datepicker" name="datepicker" ng-click="opendateModal()" readonly>
-            </label>
-            <label class="item item-input item-stacked-label">
-                <span class="input-label">End Date :</span>
-                <input type="text" placeholder="Select a date MM/DD/YYYY" ng-model="datepicker" name="datepicker" ng-click="opendateModal()" readonly>
-            </label> -->
+            <datepicker value='settings.startDate' label='Start Date'></datepicker>
+            <datepicker value='settings.endDate' label='End Date'></datepicker>  
         </ion-list>
     </ion-content>
 </ion-view>

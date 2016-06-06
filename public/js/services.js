@@ -20,7 +20,23 @@ angular.module('starter.services', [])
             return defer.promise;
         };
     }])
-    .service('commonService', ['$http', '$q', function($http, $q) {
+    .service('commonService', ['$http', '$q', '$ionicPopup', function($http, $q, $ionicPopup) {
+
+        this.showAlert = function(message, onFinish) {
+            var alertPopup = $ionicPopup.alert({
+                title: 'Jira Says.',
+                template: message,
+                buttons: [{
+                    text: 'Close',
+                    type: 'button-assertive'
+                }]
+            });
+
+            alertPopup.then(function(res) {
+                if (onFinish)
+                    onFinish();
+            });
+        };
 
         this.getSettings = function() {
             var settings = getItemFromLocalstorage('settings'),

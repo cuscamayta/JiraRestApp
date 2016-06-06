@@ -90,6 +90,7 @@ app.post('/getWorkLogs', function(request, response) {
         jira = session.jiraInstance;
 
     jira.searchJira(jql, { fields: ['*all'] }, function(error, body) {
+        body.isLogged = jira == null || jira == undefined ? false : true;
         response.send(body);
     });
 })
