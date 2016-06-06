@@ -42,6 +42,9 @@ angular.module('starter.services', [])
             var settings = getItemFromLocalstorage('settings'),
                 user = this.getUser();
 
+
+            if (!user && !settings) return null;
+
             if (settings)
                 return settings;
             else
@@ -60,8 +63,14 @@ angular.module('starter.services', [])
             return getItemFromLocalstorage('currentUser');
         }
 
+        this.isUserLogged = function() {
+            var user = this.getUser();
+            return user ? true : false;
+        }
+
         this.isSettingValid = function() {
             var settings = this.getSettings();
+            if (!settings) return false;
 
             if (settings.userName && settings.projectName)
                 return true;

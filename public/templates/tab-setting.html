@@ -18,8 +18,8 @@
             <ion-toggle ng-model="settings.useDefaultDate">
                 Show Defaul Date (Current Date + 10)
             </ion-toggle>
-            <datepicker value='settings.startDate' label='Start Date'></datepicker>
-            <datepicker value='settings.endDate' label='End Date'></datepicker>  
+            <datepicker value='settings.startDate' visible='settings.useDefaultDate' label='Start Date'></datepicker>
+            <datepicker value='settings.endDate' visible='settings.useDefaultDate' label='End Date'></datepicker>
         </ion-list>
     </ion-content>
 </ion-view>

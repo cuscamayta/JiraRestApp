@@ -24,11 +24,11 @@ angular.module('starter.controllers', ['pickadate'])
             $scope.worksLogs = [];
             $scope.datesSprint = getDatesWorkLogged();
 
-            init();
+            //init();
         }
 
         $scope.$on("$ionicView.beforeEnter", function(event, data) {
-            initialize();
+            init();
         });
 
 
@@ -44,17 +44,26 @@ angular.module('starter.controllers', ['pickadate'])
 
 
         function init() {
-            if (commonService.isSettingValid()) {
+            if (!commonService.isUserLogged()) {
+                commonService.showAlert('Please login again...', function() {
+                    $location.path('/login');
+                });
+                return;
+            }
+            if (commonService.isUserLogged() && commonService.isSettingValid()) {
+                initialize();
                 var response = timeSheetService.getTimeSheet($scope.settings);
                 response.then(function(data) {
                     if (!data.isLogged) {
                         commonService.showAlert('Please login again...', function() {
                             $location.path('/login');
                         });
+                        return;
                     }
                     if (data.issues.length <= 0) commonService.showAlert('No tiene datos para mostrar, Configure con otros datos.', function() {
                         $location.path('/tab/setting');
                     });
+
                     loadTimeSheet(data.issues, $scope.datesSprint);
                 });
             } else {
@@ -259,9 +268,10 @@ angular.module('starter.controllers', ['pickadate'])
             restrict: 'E',
             scope: {
                 value: '=',
-                label: '@'
+                label: '@',
+                visible: '='
             },
-            template: '<label class="item item-input item-stacked-label">' +
+            template: '<label class="item item-input item-stacked-label" ng-show="!visible">' +
                 '<span class="input-label">{{label}} :</span>' +
                 '<input type="text" datepicker format="yyyy/mm/dd" placeholder="Select a date YYYY/MM/DD" ng-model="value" name="datepicker" ng-click="opendateModal()"  readonly>' +
                 '</label>',
