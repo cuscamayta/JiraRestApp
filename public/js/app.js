@@ -1,11 +1,4 @@
-// Ionic Starter App
-
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
-// 'starter.services' is found in services.js
-// 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'pickadate', 'starter.controllers', 'starter.services'])
+var app = angular.module('jiraRestApp', ['ionic', 'pickadate'])
 
 .run(function($ionicPlatform) {
     $ionicPlatform.ready(function() {
@@ -43,7 +36,7 @@ angular.module('starter', ['ionic', 'pickadate', 'starter.controllers', 'starter
     .state('login', {
         url: '/login',
         templateUrl: 'templates/login.html',
-        controller: 'LoginCtrl'
+        controller: 'loginController'
     })
 
     .state('tab.timesheet', {
@@ -51,7 +44,7 @@ angular.module('starter', ['ionic', 'pickadate', 'starter.controllers', 'starter
             views: {
                 'tab-timesheet': {
                     templateUrl: 'templates/tab-timesheet.html',
-                    controller: 'TimeSheetController'
+                    controller: 'timeSheetController'
                 }
             }
         })
@@ -60,7 +53,7 @@ angular.module('starter', ['ionic', 'pickadate', 'starter.controllers', 'starter
             views: {
                 'tab-timesheet': {
                     templateUrl: 'templates/timesheet-detail.html',
-                    controller: 'TimesheetDetailCtrl'
+                    controller: 'timesheetDetailController'
                 }
             }
         })
@@ -70,7 +63,7 @@ angular.module('starter', ['ionic', 'pickadate', 'starter.controllers', 'starter
             views: {
                 'tab-setting': {
                     templateUrl: 'templates/tab-setting.html',
-                    controller: 'SettingController'
+                    controller: 'settingController'
                 }
             }
         })
@@ -79,7 +72,7 @@ angular.module('starter', ['ionic', 'pickadate', 'starter.controllers', 'starter
             views: {
                 'tab-logwork': {
                     templateUrl: 'templates/tab-logwork.html',
-                    controller: 'LogworkCtrl'
+                    controller: 'workLogController'
                 }
             }
         });
